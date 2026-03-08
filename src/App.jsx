@@ -3,11 +3,14 @@ import Header from './components/Header/Header'
 import CatalogPage from './pages/CatalogPage'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
+import { useCart } from './context/CartContext'
 
 function App() {
+    const { cartCount } = useCart()
+
     return (
         <div className="min-h-screen bg-gray-50">
-            <Header cartCount={0} />
+            <Header cartCount={cartCount} />
             <Routes>
                 <Route path="/" element={<CatalogPage />} />
                 <Route path="/product/:id" element={<ProductPage />} />
