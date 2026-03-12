@@ -11,14 +11,10 @@ function CatalogPage() {
     const filtered = useMemo(() => {
         let result = [...products]
 
-        // Фильтр по цене
         if (minPrice !== '') result = result.filter(p => p.price >= Number(minPrice))
         if (maxPrice !== '') result = result.filter(p => p.price <= Number(maxPrice))
-
-        // Фильтр по рейтингу
         if (minRating > 0) result = result.filter(p => p.rating >= minRating)
 
-        // Сортировка
         if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'name-desc') result.sort((a, b) => b.name.localeCompare(a.name))
         if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price)
@@ -34,7 +30,6 @@ function CatalogPage() {
             {/* Панель фильтров */}
             <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-wrap gap-4 items-end">
 
-                {/* Сортировка */}
                 <div className="flex flex-col gap-1">
                     <label className="text-sm text-gray-500 font-medium">Сортировка</label>
                     <select
@@ -50,7 +45,6 @@ function CatalogPage() {
                     </select>
                 </div>
 
-                {/* Цена от */}
                 <div className="flex flex-col gap-1">
                     <label className="text-sm text-gray-500 font-medium">Цена от</label>
                     <input
@@ -62,7 +56,6 @@ function CatalogPage() {
                     />
                 </div>
 
-                {/* Цена до */}
                 <div className="flex flex-col gap-1">
                     <label className="text-sm text-gray-500 font-medium">Цена до</label>
                     <input
@@ -74,7 +67,6 @@ function CatalogPage() {
                     />
                 </div>
 
-                {/* Рейтинг */}
                 <div className="flex flex-col gap-1">
                     <label className="text-sm text-gray-500 font-medium">Рейтинг от</label>
                     <select
@@ -89,7 +81,6 @@ function CatalogPage() {
                     </select>
                 </div>
 
-                {/* Сброс */}
                 <button
                     onClick={() => {
                         setSortBy('default')
