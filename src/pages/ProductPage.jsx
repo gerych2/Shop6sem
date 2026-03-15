@@ -26,9 +26,15 @@ function ProductPage() {
     }
 
     const inCart = cart.some(item => item.id === product.id)
-
-    // Похожие товары — 3 случайных кроме текущего
     const related = products.filter(p => p.id !== product.id).slice(0, 3)
+
+    const prevImage = () => {
+        setCurrentImage(i => (i === 0 ? product.images.length - 1 : i - 1))
+    }
+
+    const nextImage = () => {
+        setCurrentImage(i => (i === product.images.length - 1 ? 0 : i + 1))
+    }
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-10">
@@ -41,18 +47,49 @@ function ProductPage() {
             </div>
 
             {/* Основной блок */}
-            <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col md:flex-row gap-8 mb-10">
+            <div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 flex flex-col md:flex-row gap-8 mb-10">
 
                 {/* Левая часть — слайдер */}
                 <div className="md:w-1/2">
 
-                    {/* Главное фото */}
-                    <div className="rounded-xl overflow-hidden h-72 md:h-96 mb-4 bg-gray-50">
+                    {/* Главное фото со стрелками */}
+                    <div className="relative rounded-xl overflow-hidden h-64 sm:h-72 md:h-96 mb-4 bg-gray-50 group">
                         <img
                             src={product.images[currentImage]}
                             alt={product.name}
                             className="w-full h-full object-cover transition-all duration-500"
                         />
+
+                        {/* Стрелка влево */}
+                        <button
+                            onClick={prevImage}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center transition-all duration-200 cursor-pointer hover:scale-110 opacity-0 group-hover:opacity-100"
+                        >
+                            ‹
+                        </button>
+
+                        {/* Стрелка вправо */}
+                        <button
+                            onClick={nextImage}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full shadow-md flex items-center justify-center transition-all duration-200 cursor-pointer hover:scale-110 opacity-0 group-hover:opacity-100"
+                        >
+                            ›
+                        </button>
+
+                        {/* Точки навигации */}
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                            {product.images.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentImage(index)}
+                                    className={`rounded-full transition-all duration-200 cursor-pointer
+                    ${currentImage === index
+                                        ? 'w-6 h-2 bg-white'
+                                        : 'w-2 h-2 bg-white bg-opacity-60 hover:bg-opacity-100'
+                                    }`}
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     {/* Миниатюры */}
@@ -114,11 +151,11 @@ function ProductPage() {
                         {inCart ? '✓ Уже в корзине' : '+ Добавить в корзину'}
                     </button>
 
-                    {/* Ссылка на корзину если уже добавлен */}
+                    {/* Ссылка на корзину */}
                     {inCart && (
                         <Link
                             to="/cart"
-                            className="text-center text-sm text-amber-800 hover:underline transition-all"
+                            className="text-center text-sm text-amber-800 hover:underline transition-all mb-4"
                         >
                             Перейти в корзину →
                         </Link>
@@ -162,8 +199,8 @@ function ProductPage() {
                                 alt={item.name}
                                 className="w-16 h-16 object-cover rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
                             />
-                            <div>
-                                <p className="font-medium text-gray-800 text-sm group-hover:text-amber-800 transition-colors">
+                            <div className="min-w-0">
+                                <p className="font-medium text-gray-800 text-sm group-hover:text-amber-800 transition-colors truncate">
                                     {item.name}
                                 </p>
                                 <p className="text-amber-800 font-bold text-sm">{item.price} ₽</p>
