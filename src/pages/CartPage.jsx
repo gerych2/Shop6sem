@@ -1,20 +1,20 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
-const PROMO_CODES = {
-    'SAVE10': 0.10,
-}
+const PROMO_CODES = { 'SAVE10': 0.10 }
 
 function CartPage() {
     const { cart, removeFromCart, updateQuantity } = useCart()
+    const navigate = useNavigate()
     const [promoInput, setPromoInput] = useState('')
     const [appliedPromo, setAppliedPromo] = useState(null)
     const [promoError, setPromoError] = useState('')
 
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const discount = appliedPromo ? Math.round(total * PROMO_CODES[appliedPromo]) : 0
-    const finalTotal = total - discount
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const discount = appliedPromo ? Math.round(subtotal * PROMO_CODES[appliedPromo]) : 0
+    const tax = Math.round((subtotal - discount) * 0.08)
+    const total = subtotal - discount + tax
 
     const applyPromo = () => {
         const code = promoInput.trim().toUpperCase()
@@ -28,187 +28,172 @@ function CartPage() {
         }
     }
 
-    const handlePromoKeyDown = (e) => {
-        if (e.key === 'Enter') applyPromo()
-    }
-
     if (cart.length === 0) {
         return (
-            <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-                <div className="text-8xl mb-6">🛒</div>
-                <h2 className="text-2xl font-bold text-gray-700 mb-2">Корзина пуста</h2>
-                <p className="text-gray-400 mb-8">Добавьте что-нибудь вкусное из каталога!</p>
+            <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Your Cart is Empty</h2>
+                <p className="text-gray-500 mb-8">Start shopping to add items to your cart</p>
                 <Link
                     to="/"
-                    className="px-8 py-3 bg-amber-800 text-white rounded-xl font-semibold hover:bg-amber-700 active:scale-95 transition-all shadow-lg inline-block"
+                    className="inline-flex items-center gap-2 px-8 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 active:scale-95 transition-all shadow-md"
                 >
-                    Вернуться в каталог
+                    Browse Products →
                 </Link>
             </div>
         )
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-10">
-
-            {/* Заголовок */}
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-amber-800">Корзина</h1>
-                <span className="text-gray-400 text-sm">{cart.length} позиций</span>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
             <div className="flex flex-col lg:flex-row gap-8">
 
-                {/* Список товаров */}
-                <div className="flex-1 flex flex-col gap-4">
-                    {cart.map(item => (
-                        <div
-                            key={item.id}
-                            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition-shadow duration-200"
-                        >
-                            {/* Фото */}
-                            <Link to={`/product/${item.id}`}>
-                                <img
-                                    src={item.images[0]}
-                                    alt={item.name}
-                                    className="w-20 h-20 object-cover rounded-xl flex-shrink-0 hover:scale-105 transition-transform duration-200"
-                                />
-                            </Link>
+                {/* Левая часть — таблица товаров */}
+                <div className="flex-1">
 
-                            {/* Инфо */}
-                            <div className="flex-1 min-w-0">
-                                <Link to={`/product/${item.id}`}>
-                                    <h3 className="font-semibold text-gray-800 hover:text-amber-800 transition-colors truncate">
-                                        {item.name}
-                                    </h3>
-                                </Link>
-                                <p className="text-sm text-gray-400">{item.subtitle}</p>
-                                <p className="text-amber-800 font-bold mt-1">{item.price} ₽ / шт</p>
-                            </div>
+                    {/* Таблица */}
+                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
 
-                            {/* Количество */}
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                                <button
-                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                    className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:border-amber-800 hover:text-amber-800 hover:bg-amber-50 transition-all cursor-pointer text-lg font-medium"
-                                >
-                                    −
-                                </button>
-                                <span className="w-6 text-center font-semibold">{item.quantity}</span>
-                                <button
-                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                    className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:border-amber-800 hover:text-amber-800 hover:bg-amber-50 transition-all cursor-pointer text-lg font-medium"
-                                >
-                                    +
-                                </button>
-                            </div>
+                        {/* Заголовок таблицы */}
+                        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-6 py-3 border-b border-gray-100 text-sm text-gray-500 font-medium">
+                            <span>Product</span>
+                            <span className="w-20 text-center">Price</span>
+                            <span className="w-32 text-center">Quantity</span>
+                            <span className="w-20 text-center">Total</span>
+                            <span className="w-8"></span>
+                        </div>
 
-                            {/* Сумма за позицию */}
-                            <div className="w-24 text-right font-bold text-gray-800 flex-shrink-0">
-                                {item.price * item.quantity} ₽
-                            </div>
-
-                            {/* Удалить */}
-                            <button
-                                onClick={() => removeFromCart(item.id)}
-                                className="text-gray-300 hover:text-red-400 transition-colors cursor-pointer text-xl ml-1 flex-shrink-0 hover:scale-110"
+                        {/* Строки товаров */}
+                        {cart.map(item => (
+                            <div
+                                key={item.id}
+                                className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors"
                             >
-                                ✕
+                                {/* Товар */}
+                                <div className="flex items-center gap-3">
+                                    <img
+                                        src={item.images[0]}
+                                        alt={item.name}
+                                        className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                                    />
+                                    <div>
+                                        <p className="font-semibold text-gray-900">{item.name}</p>
+                                        <p className="text-sm text-gray-500">{item.subtitle}</p>
+                                    </div>
+                                </div>
+
+                                {/* Цена */}
+                                <div className="w-20 text-center text-gray-700 font-medium">
+                                    ${item.price}
+                                </div>
+
+                                {/* Количество */}
+                                <div className="w-32 flex items-center justify-center gap-2">
+                                    <button
+                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                        className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center hover:border-gray-400 transition-colors cursor-pointer font-medium"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                                    <button
+                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                        className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center hover:border-gray-400 transition-colors cursor-pointer font-medium"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+
+                                {/* Итого */}
+                                <div className="w-20 text-center font-bold text-gray-900">
+                                    ${(item.price * item.quantity).toFixed(2)}
+                                </div>
+
+                                {/* Удалить */}
+                                <button
+                                    onClick={() => removeFromCart(item.id)}
+                                    className="w-8 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Промокод */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                        <h3 className="font-bold text-gray-900 text-lg mb-4">Have a promo code?</h3>
+                        <div className="flex gap-3">
+                            <input
+                                type="text"
+                                placeholder="Enter promo code"
+                                value={promoInput}
+                                onChange={e => { setPromoInput(e.target.value); setPromoError('') }}
+                                onKeyDown={e => e.key === 'Enter' && applyPromo()}
+                                disabled={!!appliedPromo}
+                                className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-400"
+                            />
+                            <button
+                                onClick={applyPromo}
+                                disabled={!!appliedPromo}
+                                className="px-6 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Apply
                             </button>
                         </div>
-                    ))}
+                        {promoError && <p className="text-red-500 text-sm mt-2">❌ {promoError}</p>}
+                        {appliedPromo && <p className="text-green-500 text-sm mt-2">✓ Промокод применён! Скидка 10%</p>}
+                    </div>
 
-                    {/* Продолжить покупки */}
-                    <Link
-                        to="/"
-                        className="text-amber-800 hover:text-amber-600 transition-colors text-sm flex items-center gap-1 mt-2"
-                    >
-                        ← Продолжить покупки
-                    </Link>
                 </div>
 
-                {/* Итог */}
-                <div className="lg:w-72 flex-shrink-0">
-                    <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
+                {/* Правая часть — Order Summary */}
+                <div className="lg:w-80 flex-shrink-0">
+                    <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-24">
 
-                        <h2 className="text-lg font-bold text-gray-800 mb-4">Итого</h2>
+                        <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
-                        {/* Список позиций */}
-                        <div className="flex flex-col gap-2 mb-4">
-                            {cart.map(item => (
-                                <div key={item.id} className="flex justify-between text-sm text-gray-500">
-                                    <span className="truncate mr-2">{item.name} × {item.quantity}</span>
-                                    <span className="flex-shrink-0">{item.price * item.quantity} ₽</span>
-                                </div>
-                            ))}
+                        <div className="flex justify-between text-gray-600 mb-3">
+                            <span>Subtotal</span>
+                            <span>${subtotal}</span>
                         </div>
 
-                        <div className="border-t border-gray-100 my-3" />
-
-                        {/* Сумма */}
-                        <div className="flex justify-between text-gray-600 mb-2">
-                            <span>Сумма</span>
-                            <span>{total} ₽</span>
-                        </div>
-
-                        {/* Скидка */}
                         {appliedPromo && (
-                            <div className="flex justify-between text-green-600 mb-2">
-                                <span>Скидка (10%)</span>
-                                <span>−{discount} ₽</span>
+                            <div className="flex justify-between text-green-600 mb-3">
+                                <span>Discount (10%)</span>
+                                <span>-${discount}</span>
                             </div>
                         )}
 
-                        <div className="border-t border-gray-100 my-3" />
-
-                        {/* Итоговая сумма */}
-                        <div className="flex justify-between font-bold text-xl text-amber-800 mb-6">
-                            <span>К оплате</span>
-                            <span>{finalTotal} ₽</span>
+                        <div className="flex justify-between text-gray-600 mb-3">
+                            <span>Tax (8%)</span>
+                            <span>${tax}</span>
                         </div>
 
-                        {/* Промокод */}
-                        <div className="mb-4">
-                            <label className="text-sm text-gray-500 font-medium mb-1 block">
-                                Промокод
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    placeholder="Введите код"
-                                    value={promoInput}
-                                    onChange={e => {
-                                        setPromoInput(e.target.value)
-                                        setPromoError('')
-                                    }}
-                                    onKeyDown={handlePromoKeyDown}
-                                    disabled={!!appliedPromo}
-                                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-800 disabled:bg-gray-50 disabled:text-gray-400"
-                                />
-                                <button
-                                    onClick={applyPromo}
-                                    disabled={!!appliedPromo}
-                                    className="px-3 py-2 bg-amber-800 text-white rounded-xl text-sm hover:bg-amber-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    ОК
-                                </button>
-                            </div>
+                        <div className="border-t border-gray-200 my-4" />
 
-                            {promoError && (
-                                <p className="text-red-400 text-xs mt-1">❌ {promoError}</p>
-                            )}
-                            {appliedPromo && (
-                                <p className="text-green-500 text-xs mt-1">✓ Промокод применён!</p>
-                            )}
+                        <div className="flex justify-between font-bold text-xl text-gray-900 mb-6">
+                            <span>Total</span>
+                            <span>${total}</span>
                         </div>
 
-                        {/* Кнопка оформить */}
-                        <button className="w-full py-3 bg-amber-800 text-white rounded-xl font-semibold hover:bg-amber-700 active:scale-95 transition-all cursor-pointer shadow-md hover:shadow-lg">
-                            Оформить заказ
+                        <button className="w-full py-3 bg-orange-500 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-orange-600 active:scale-95 transition-all cursor-pointer shadow-md mb-3">
+                            Proceed to Checkout →
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full py-3 border border-gray-200 text-gray-700 rounded-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all cursor-pointer"
+                        >
+                            Continue Shopping
                         </button>
 
                     </div>
                 </div>
+
             </div>
         </div>
     )
