@@ -23,7 +23,7 @@ function CartPage() {
             setAppliedPromo(code)
             setPromoError('')
         } else {
-            setPromoError('Неверный промокод')
+            setPromoError('Invalid promo code')
             setAppliedPromo(null)
         }
     }
@@ -145,7 +145,7 @@ function CartPage() {
                             </button>
                         </div>
                         {promoError && <p className="text-red-500 text-sm mt-2">❌ {promoError}</p>}
-                        {appliedPromo && <p className="text-green-500 text-sm mt-2">✓ Промокод применён! Скидка 10%</p>}
+                        {appliedPromo && <p className="text-green-500 text-sm mt-2">✓ Promo code applied! 10% discount</p>}
                     </div>
 
                 </div>

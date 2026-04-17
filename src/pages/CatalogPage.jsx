@@ -30,7 +30,7 @@ function CatalogPage() {
     const filtered = useMemo(() => {
         let result = [...products]
         result = result.filter(p => p.price <= priceRange)
-        if (minRating > 0) result = result.filter(p => p.rating >= minRating)
+        if (minRating > 0) result = result.filter(p => p.rating >= minRating - 0.5)
         if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'name-desc') result.sort((a, b) => b.name.localeCompare(a.name))
         if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price)
@@ -88,14 +88,15 @@ function CatalogPage() {
                     <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-3">Minimum Rating</h3>
                         <div className="flex items-center gap-4">
-                            {[4.8, 4.5, 4.0].map(r => (
+                            {[5, 4, 3].map(r => (
                                 <label key={r} className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={minRating === r}
-                                        onChange={() => setMinRating(minRating === r ? 0 : r)}
-                                        className="w-4 h-4 accent-orange-500"
-                                    />
+                                    <div
+                                        onClick={() => setMinRating(minRating === r ? 0 : r)}
+                                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors
+                                            ${minRating === r ? 'border-orange-500' : 'border-gray-300'}`}
+                                    >
+                                        {minRating === r && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                                    </div>
                                     <span className="text-sm text-gray-700">{r}+ Stars</span>
                                 </label>
                             ))}
@@ -111,7 +112,7 @@ function CatalogPage() {
                             max={400}
                             value={priceRange}
                             onChange={e => setPriceRange(Number(e.target.value))}
-                            className="w-full accent-orange-500"
+                            className="w-full price-range-slider"
                         />
                         <div className="flex justify-between text-sm text-gray-500 mt-1">
                             <span>$0</span>
