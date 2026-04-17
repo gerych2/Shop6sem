@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 
 function StarRating({ rating }) {
-    // Half-star support: fill full if star <= floor, half if star == ceil and has .5
     return (
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map(star => {
@@ -38,14 +37,14 @@ function ProductCard({ product, onAddToCart }) {
     }
 
     return (
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col border border-gray-100">
+        <div className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-200">
 
             {/* Image */}
             <Link to={`/product/${product.id}`} className="block">
                 <img
                     src={product.images[0]}
                     alt={product.name}
-                    className="w-full h-56 object-cover"
+                    className="w-full h-72 object-cover"
                 />
             </Link>
 
@@ -54,7 +53,7 @@ function ProductCard({ product, onAddToCart }) {
 
                 {/* Name */}
                 <Link to={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-gray-900 text-base mb-1 leading-snug">
+                    <h3 className="font-semibold text-gray-900 text-base mb-1 leading-snug hover:text-orange-500 transition-colors">
                         {product.name}
                     </h3>
                 </Link>

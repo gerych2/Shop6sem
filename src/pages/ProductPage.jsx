@@ -144,19 +144,19 @@ function ProductPage() {
           {/* Quantity */}
           <div className="mb-5">
             <p className="font-semibold text-gray-900 mb-2">Quantity</p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0">
               <button
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-500 transition-colors cursor-pointer text-lg font-medium text-gray-700"
+                className="w-10 h-10 border border-gray-300 rounded-l-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer text-lg font-medium text-gray-700"
               >
                 -
               </button>
-              <div className="w-14 h-10 border border-gray-300 rounded-lg flex items-center justify-center font-semibold text-gray-900">
+              <div className="w-14 h-10 border-t border-b border-gray-300 flex items-center justify-center font-semibold text-gray-900">
                 {quantity}
               </div>
               <button
                 onClick={() => setQuantity(q => q + 1)}
-                className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-500 transition-colors cursor-pointer text-lg font-medium text-gray-700"
+                className="w-10 h-10 border border-gray-300 rounded-r-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer text-lg font-medium text-gray-700"
               >
                 +
               </button>
@@ -167,7 +167,7 @@ function ProductPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleAddToCart}
-              className="w-full py-4 bg-orange-500 text-white rounded-lg font-semibold text-lg flex items-center justify-center gap-2 hover:bg-orange-600 active:scale-95 transition-all cursor-pointer shadow-md"
+              className="w-full py-4 bg-orange-500 text-white rounded-lg font-semibold text-lg flex items-center justify-center gap-2 hover:bg-orange-600 active:scale-95 transition-all cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

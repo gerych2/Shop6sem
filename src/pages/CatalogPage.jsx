@@ -19,7 +19,8 @@ function CatalogPage() {
     const [sortBy, setSortBy] = useState('name-asc')
     const [showFilters, setShowFilters] = useState(false)
     const [minRating, setMinRating] = useState(0)
-    const [priceRange, setPriceRange] = useState(400)
+    const [priceMin, setPriceMin] = useState(0)
+    const [priceMax, setPriceMax] = useState(400)
     const [toast, setToast] = useState(null)
 
     const handleAddToCart = (name) => {
@@ -29,14 +30,14 @@ function CatalogPage() {
 
     const filtered = useMemo(() => {
         let result = [...products]
-        result = result.filter(p => p.price <= priceRange)
+        result = result.filter(p => p.price >= priceMin && p.price <= priceMax)
         if (minRating > 0) result = result.filter(p => p.rating >= minRating - 0.5)
         if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
         if (sortBy === 'name-desc') result.sort((a, b) => b.name.localeCompare(a.name))
         if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price)
         if (sortBy === 'price-desc') result.sort((a, b) => b.price - a.price)
         return result
-    }, [sortBy, minRating, priceRange])
+    }, [sortBy, minRating, priceMin, priceMax])
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -106,24 +107,52 @@ function CatalogPage() {
                     {/* Цена */}
                     <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
-                        <input
-                            type="range"
-                            min={0}
-                            max={400}
-                            value={priceRange}
-                            onChange={e => setPriceRange(Number(e.target.value))}
-                            className="w-full price-range-slider"
-                        />
-                        <div className="flex justify-between text-sm text-gray-500 mt-1">
-                            <span>$0</span>
-                            <span>${priceRange}</span>
+                        <div className="relative h-5 flex items-center">
+                            {/* Track background */}
+                            <div className="absolute w-full h-1 bg-gray-200 rounded" />
+                            {/* Active track */}
+                            <div
+                                className="absolute h-1 bg-gray-900 rounded"
+                                style={{
+                                    left: `${(priceMin / 400) * 100}%`,
+                                    right: `${100 - (priceMax / 400) * 100}%`
+                                }}
+                            />
+                            {/* Min thumb */}
+                            <input
+                                type="range"
+                                min={0}
+                                max={400}
+                                value={priceMin}
+                                onChange={e => {
+                                    const val = Number(e.target.value)
+                                    if (val < priceMax) setPriceMin(val)
+                                }}
+                                className="price-range-slider absolute w-full"
+                            />
+                            {/* Max thumb */}
+                            <input
+                                type="range"
+                                min={0}
+                                max={400}
+                                value={priceMax}
+                                onChange={e => {
+                                    const val = Number(e.target.value)
+                                    if (val > priceMin) setPriceMax(val)
+                                }}
+                                className="price-range-slider absolute w-full"
+                            />
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-500 mt-2">
+                            <span>${priceMin}</span>
+                            <span>${priceMax}</span>
                         </div>
                     </div>
 
                     {/* Сброс */}
                     <div className="flex items-end">
                         <button
-                            onClick={() => { setMinRating(0); setPriceRange(400) }}
+                            onClick={() => { setMinRating(0); setPriceMin(0); setPriceMax(400) }}
                             className="px-4 py-2 border border-orange-500 text-orange-500 rounded-lg text-sm font-medium hover:bg-orange-50 transition-colors cursor-pointer"
                         >
                             Clear All Filters
@@ -139,7 +168,7 @@ function CatalogPage() {
                     No products found 😔
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.map(product => (
                         <ProductCard
                             key={product.id}

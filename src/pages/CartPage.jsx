@@ -11,10 +11,10 @@ function CartPage() {
     const [appliedPromo, setAppliedPromo] = useState(null)
     const [promoError, setPromoError] = useState('')
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const discount = appliedPromo ? Math.round(subtotal * PROMO_CODES[appliedPromo]) : 0
-    const tax = Math.round((subtotal - discount) * 0.08)
-    const total = subtotal - discount + tax
+    const subtotal = parseFloat(cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2))
+    const discount = appliedPromo ? parseFloat((subtotal * PROMO_CODES[appliedPromo]).toFixed(2)) : 0
+    const tax = parseFloat(((subtotal - discount) * 0.08).toFixed(2))
+    const total = parseFloat((subtotal - discount + tax).toFixed(2))
 
     const applyPromo = () => {
         const code = promoInput.trim().toUpperCase()
@@ -158,26 +158,26 @@ function CartPage() {
 
                         <div className="flex justify-between text-gray-600 mb-3">
                             <span>Subtotal</span>
-                            <span>${subtotal}</span>
+                            <span>${subtotal.toFixed(2)}</span>
                         </div>
 
                         {appliedPromo && (
                             <div className="flex justify-between text-green-600 mb-3">
                                 <span>Discount (10%)</span>
-                                <span>-${discount}</span>
+                                <span>-${discount.toFixed(2)}</span>
                             </div>
                         )}
 
                         <div className="flex justify-between text-gray-600 mb-3">
                             <span>Tax (8%)</span>
-                            <span>${tax}</span>
+                            <span>${tax.toFixed(2)}</span>
                         </div>
 
                         <div className="border-t border-gray-200 my-4" />
 
                         <div className="flex justify-between font-bold text-xl text-gray-900 mb-6">
                             <span>Total</span>
-                            <span>${total}</span>
+                            <span>${total.toFixed(2)}</span>
                         </div>
 
                         <button className="w-full py-3 bg-orange-500 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-orange-600 active:scale-95 transition-all cursor-pointer shadow-md mb-3">

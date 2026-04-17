@@ -5,10 +5,10 @@
     -webkit-appearance: none;
     appearance: none;
     height: 4px;
-    background: #111827;
-    border-radius: 2px;
+    background: transparent;
     outline: none;
     cursor: pointer;
+    pointer-events: none;
 }
 
 .price-range-slider::-webkit-slider-thumb {
@@ -20,6 +20,7 @@
     background: #ffffff;
     border: 2px solid #111827;
     cursor: pointer;
+    pointer-events: all;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
@@ -30,5 +31,10 @@
     background: #ffffff;
     border: 2px solid #111827;
     cursor: pointer;
+    pointer-events: all;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.price-range-slider::-webkit-slider-runnable-track {
+    background: transparent;
 }
