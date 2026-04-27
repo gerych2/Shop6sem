@@ -29,7 +29,7 @@ function ProductPage() {
     )
   }
 
-  const related = products.filter(p => p.id !== product.id).slice(0, 3)
+  const related = products.filter(p => p.id !== product.id && p.subtitle === product.subtitle).slice(0, 3)
   const specs = product.specs || []
   const inCart = cart.some(item => item.id === product.id)
 
@@ -194,7 +194,7 @@ function ProductPage() {
           <p className="text-gray-600 leading-relaxed text-base">{product.description}</p>
         </div>
 
-        {/* Accordion */}
+        {/* Accordion — Technical Specifications */}
         <div className="border-t border-gray-200">
           <button
             onClick={() => setAccordionOpen(!accordionOpen)}
