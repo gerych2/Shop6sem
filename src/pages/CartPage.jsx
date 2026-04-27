@@ -23,7 +23,7 @@ function CartPage() {
             setAppliedPromo(code)
             setPromoError('')
         } else {
-            setPromoError('Invalid promo code')
+            setPromoError('Неверный промокод')
             setAppliedPromo(null)
         }
     }
@@ -55,8 +55,8 @@ function CartPage() {
                     {/* Таблица */}
                     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
 
-                        {/* Заголовок таблицы */}
-                        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-6 py-3 border-b border-gray-100 text-sm text-gray-500 font-medium">
+                        {/* Заголовок таблицы — только десктоп */}
+                        <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-6 py-3 border-b border-gray-100 text-sm text-gray-500 font-medium">
                             <span>Product</span>
                             <span className="w-20 text-center">Price</span>
                             <span className="w-32 text-center">Quantity</span>
@@ -68,28 +68,39 @@ function CartPage() {
                         {cart.map(item => (
                             <div
                                 key={item.id}
-                                className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                                className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto_auto] gap-3 sm:gap-4 items-start sm:items-center px-4 sm:px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors"
                             >
                                 {/* Товар */}
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 w-full">
                                     <img
                                         src={item.images[0]}
                                         alt={item.name}
                                         className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                                     />
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-gray-900">{item.name}</p>
                                         <p className="text-sm text-gray-500">{item.subtitle}</p>
+                                        {/* Мобильная цена */}
+                                        <p className="text-sm font-medium text-gray-700 sm:hidden mt-1">${item.price} × {item.quantity} = <span className="font-bold text-gray-900">${(item.price * item.quantity).toFixed(2)}</span></p>
                                     </div>
+                                    {/* Удалить — мобильный */}
+                                    <button
+                                        onClick={() => removeFromCart(item.id)}
+                                        className="sm:hidden flex items-center justify-center text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
                                 </div>
 
-                                {/* Цена */}
-                                <div className="w-20 text-center text-gray-700 font-medium">
+                                {/* Цена — десктоп */}
+                                <div className="hidden sm:block w-20 text-center text-gray-700 font-medium">
                                     ${item.price}
                                 </div>
 
                                 {/* Количество */}
-                                <div className="w-32 flex items-center justify-center gap-2">
+                                <div className="w-32 flex items-center justify-start sm:justify-center gap-2">
                                     <button
                                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                         className="w-8 h-8 border border-gray-200 rounded-lg flex items-center justify-center hover:border-gray-400 transition-colors cursor-pointer font-medium"
@@ -105,15 +116,15 @@ function CartPage() {
                                     </button>
                                 </div>
 
-                                {/* Итого */}
-                                <div className="w-20 text-center font-bold text-gray-900">
+                                {/* Итого — десктоп */}
+                                <div className="hidden sm:block w-20 text-center font-bold text-gray-900">
                                     ${(item.price * item.quantity).toFixed(2)}
                                 </div>
 
-                                {/* Удалить */}
+                                {/* Удалить — десктоп */}
                                 <button
                                     onClick={() => removeFromCart(item.id)}
-                                    className="w-8 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                                    className="hidden sm:flex w-8 items-center justify-center text-red-400 hover:text-red-600 transition-colors cursor-pointer"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

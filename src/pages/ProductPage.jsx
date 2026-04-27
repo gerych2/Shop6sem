@@ -9,7 +9,7 @@ function ProductPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const product = products.find(p => p.id === Number(id))
-  const { addToCart } = useCart()
+  const { addToCart, cart } = useCart()
   const [currentImage, setCurrentImage] = useState(0)
   const [accordionOpen, setAccordionOpen] = useState(false)
   const [quantity, setQuantity] = useState(1)
@@ -31,6 +31,7 @@ function ProductPage() {
 
   const related = products.filter(p => p.id !== product.id).slice(0, 3)
   const specs = product.specs || []
+  const inCart = cart.some(item => item.id === product.id)
 
   const prevImage = () => setCurrentImage(i => i === 0 ? product.images.length - 1 : i - 1)
   const nextImage = () => setCurrentImage(i => i === product.images.length - 1 ? 0 : i + 1)
@@ -167,12 +168,13 @@ function ProductPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleAddToCart}
-              className="w-full py-4 bg-orange-500 text-white rounded-lg font-semibold text-lg flex items-center justify-center gap-2 hover:bg-orange-600 active:scale-95 transition-all cursor-pointer"
+              className={`w-full py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer
+                ${inCart ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              {added ? 'Added ✓' : 'Add to Cart'}
+              {inCart ? 'Added to Cart ✓' : added ? 'Added ✓' : 'Add to Cart'}
             </button>
             <button
               onClick={() => { handleAddToCart(); navigate('/cart') }}
@@ -185,42 +187,45 @@ function ProductPage() {
         </div>
       </div>
 
-      {/* Description */}
-      <div className="mb-2">
-        <p className="text-gray-600 leading-relaxed text-base max-w-3xl">{product.description}</p>
-      </div>
+      {/* Description + Technical Specifications accordion */}
+      <div className="border border-gray-200 rounded-xl overflow-hidden max-w-4xl mb-12">
+        {/* Description always visible */}
+        <div className="px-6 py-5">
+          <p className="text-gray-600 leading-relaxed text-base">{product.description}</p>
+        </div>
 
-      {/* Technical Specifications accordion */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden max-w-4xl mb-12 mt-6">
-        <button
-          onClick={() => setAccordionOpen(!accordionOpen)}
-          className="w-full flex items-center justify-between px-6 py-5 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          <h2 className="text-xl font-bold text-gray-900">Technical Specifications</h2>
-          <svg
-            className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${accordionOpen ? 'rotate-180' : ''}`}
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        {/* Accordion */}
+        <div className="border-t border-gray-200">
+          <button
+            onClick={() => setAccordionOpen(!accordionOpen)}
+            className="w-full flex items-center justify-between px-6 py-5 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-          </svg>
-        </button>
+            <h2 className="text-xl font-bold text-gray-900">Technical Specifications</h2>
+            <svg
+              className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${accordionOpen ? 'rotate-180' : ''}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
 
-        <div className={`overflow-hidden transition-all duration-300 ${accordionOpen ? 'max-h-[500px]' : 'max-h-0'}`}>
-          <div className="bg-gray-50 px-6 py-4">
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="grid grid-cols-2">
-                {specs.map((spec, i) => (
-                  <div
-                    key={i}
-                    className={`px-6 py-4
-                      ${i % 2 === 0 ? 'border-r border-gray-200' : ''}
-                      ${i < specs.length - 2 ? 'border-b border-gray-200' : ''}
-                    `}
-                  >
-                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">{spec.label}</p>
-                    <p className="font-semibold text-gray-900 text-base">{spec.value}</p>
-                  </div>
-                ))}
+          <div className={`overflow-hidden transition-all duration-300 ${accordionOpen ? 'max-h-[500px]' : 'max-h-0'}`}>
+            <div className="bg-gray-50 px-6 py-4">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="grid grid-cols-2">
+                  {specs.map((spec, i) => (
+                    <div
+                      key={i}
+                      className={`px-6 py-4
+                        ${i % 2 === 0 ? 'border-r border-gray-200' : ''}
+                        ${i < specs.length - 2 ? 'border-b border-gray-200' : ''}
+                      `}
+                    >
+                      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">{spec.label}</p>
+                      <p className="font-semibold text-gray-900 text-base">{spec.value}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
